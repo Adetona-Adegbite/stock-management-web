@@ -1,0 +1,15 @@
+.page-container {
+  height: 100vh; /* Set height to 100% of viewport height */
+  padding: 20px; /* Add padding for better spacing */
+  box-sizing: border-box; /* Ensure padding is included in the height */
+  width: 100vw;
+}
+@media print {
+  /* Change font size and color for the document title */
+  h1.document-title {
+    font-size: 32px; /* Change font size as desired */
+    color: red; /* Change color as desired */
+    text-align: center; /* Optional: Align title to center */
+    /* Add any other styling you want */
+  }
+}
