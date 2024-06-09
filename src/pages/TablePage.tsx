@@ -9,7 +9,6 @@ import {
   message,
   Spin,
 } from "antd";
-import axios from "axios";
 import "./pages.css";
 import axiosInstance from "../axiosinstance";
 
@@ -99,6 +98,7 @@ export const TablePage: React.FC = () => {
           itemId: values.itemId,
           quantity: values.quantity,
         });
+        console.log(response.data);
 
         setIsAddItemModalVisible(false);
         fetchTables();

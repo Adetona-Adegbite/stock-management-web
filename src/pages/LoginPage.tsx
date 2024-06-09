@@ -3,7 +3,6 @@ import { Form, Input, Button, message } from "antd";
 import axios from "axios";
 import "./pages.css";
 import { useNavigate } from "react-router-dom";
-import { renderToPipeableStream } from "react-dom/server";
 
 interface LoginProps {
   onLogin: () => void;

@@ -72,7 +72,7 @@ export const StockPage: React.FC = () => {
     {
       title: "Action",
       key: "action",
-      render: (text: string, record: Item) => (
+      render: (record: Item) => (
         <>
           <Button style={{ margin: 5 }} onClick={() => showModal(record)}>
             Edit

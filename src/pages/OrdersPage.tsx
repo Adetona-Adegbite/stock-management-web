@@ -11,7 +11,7 @@ const OrdersPage: React.FC = () => {
   const [tables, setTables] = useState<any[]>([]);
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [receiptData, setReceiptData] = useState<any[]>({
+  const [receiptData, setReceiptData] = useState<any>({
     items: [],
     total: 0,
     printedDate: "",
