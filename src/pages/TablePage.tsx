@@ -50,9 +50,7 @@ export const TablePage: React.FC = () => {
   const fetchTables = async () => {
     setLoading(true);
 
-    const response = await axiosInstance.get<TableData[]>(
-      "http://127.0.0.1:3000/tables"
-    );
+    const response = await axiosInstance.get<TableData[]>("tables");
     setTables(response.data);
     setLoading(false);
   };
@@ -60,9 +58,7 @@ export const TablePage: React.FC = () => {
   const fetchWaiters = async () => {
     setLoading(true);
 
-    const response = await axiosInstance.get<Waiter[]>(
-      "http://127.0.0.1:3000/waiters"
-    );
+    const response = await axiosInstance.get<Waiter[]>("waiters");
     setWaiters(response.data);
     setLoading(false);
   };
@@ -70,9 +66,7 @@ export const TablePage: React.FC = () => {
   const fetchItems = async () => {
     setLoading(true);
 
-    const response = await axiosInstance.get<Item[]>(
-      "http://127.0.0.1:3000/stock"
-    );
+    const response = await axiosInstance.get<Item[]>("stock");
     setItems(response.data);
     setLoading(false);
   };

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://127.0.0.1:3000", // Your API base URL
+  baseURL: "https://stock-management-backend.adaptable.app", // Your API base URL
 });
 
 const handle401Error = () => {

@@ -48,7 +48,7 @@ export const StockPage: React.FC = () => {
         id: editingItem.id,
       });
     } else {
-      await axios.post("add-stock", values);
+      await axiosInstance.post("add-stock", values);
     }
     fetchItems();
     setLoading(false);

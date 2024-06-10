@@ -3,6 +3,7 @@ import { Form, Input, Button, message } from "antd";
 import axios from "axios";
 import "./pages.css";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../axiosinstance";
 
 interface LoginProps {
   onLogin: () => void;
@@ -18,7 +19,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
   }) => {
     setLoading(true);
     try {
-      const response = await axios.post("http://127.0.0.1:3000/login", values);
+      const response = await axiosInstance.post("login", values);
       console.log(response.data);
 
       localStorage.setItem("token", response.data.accessToken);
@@ -26,6 +27,8 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
       navigate("/");
       onLogin();
     } catch (error) {
+      console.log(error);
+
       message.error("Login failed");
     } finally {
       setLoading(false);
