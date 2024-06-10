@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Input, InputNumber, Spin } from "antd";
-import axios from "axios";
 import "./pages.css";
 import axiosInstance from "../axiosinstance";
 
