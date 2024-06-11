@@ -9,7 +9,6 @@ import {
   message,
   Spin,
 } from "antd";
-import "./pages.css";
 import axiosInstance from "../axiosinstance";
 
 interface TableData {
@@ -17,6 +16,7 @@ interface TableData {
   number: number;
   waiterId: number;
   name: string;
+  cleared: boolean;
 }
 
 interface Waiter {
@@ -49,7 +49,6 @@ export const TablePage: React.FC = () => {
 
   const fetchTables = async () => {
     setLoading(true);
-
     const response = await axiosInstance.get<TableData[]>("tables");
     setTables(response.data);
     setLoading(false);
@@ -57,7 +56,6 @@ export const TablePage: React.FC = () => {
 
   const fetchWaiters = async () => {
     setLoading(true);
-
     const response = await axiosInstance.get<Waiter[]>("waiters");
     setWaiters(response.data);
     setLoading(false);
@@ -65,7 +63,6 @@ export const TablePage: React.FC = () => {
 
   const fetchItems = async () => {
     setLoading(true);
-
     const response = await axiosInstance.get<Item[]>("stock");
     setItems(response.data);
     setLoading(false);
@@ -78,7 +75,6 @@ export const TablePage: React.FC = () => {
 
   const handleOk = async () => {
     const values = form.getFieldsValue();
-
     await axiosInstance.post("create-waiter-tab", values);
     setIsModalVisible(false);
     fetchTables();
@@ -86,22 +82,17 @@ export const TablePage: React.FC = () => {
 
   const handleAddItemOk = async () => {
     const values = addItemForm.getFieldsValue();
-    console.log(selectedTableId, values);
-
     if (selectedTableId !== null) {
       try {
-        const response = await axiosInstance.post("add-to-waiter-tab", {
+        await axiosInstance.post("add-to-waiter-tab", {
           tableId: selectedTableId,
           itemId: values.itemId,
           quantity: values.quantity,
         });
-        console.log(response.data);
-
         setIsAddItemModalVisible(false);
         fetchTables();
         fetchItems();
       } catch (e: any) {
-        console.log("Error: ", e);
         message.error(`Error:  ${e.response.data}`);
       }
     }
@@ -113,14 +104,46 @@ export const TablePage: React.FC = () => {
     addItemForm.resetFields();
   };
 
+  const handleClearTable = async (tableId: number) => {
+    try {
+      await axiosInstance.put(`clear-table/${tableId}`);
+      fetchTables();
+      message.success("Table cleared successfully");
+    } catch (e: any) {
+      console.log(e);
+
+      message.error(`Error: ${e.response.data}`);
+    }
+  };
+
   const columns = [
     { title: "Number", dataIndex: "number", key: "number" },
     { title: "Waiter", dataIndex: "name", key: "waiterId" },
     {
+      title: "Cleared",
+      dataIndex: "cleared",
+      key: "cleared",
+      render: (cleared: boolean) => (cleared ? "Yes" : "No"),
+    },
+    {
       title: "Actions",
       key: "actions",
       render: (_text: string, record: TableData) => (
-        <Button onClick={() => showAddItemModal(record.id)}>Add Items</Button>
+        <span>
+          <Button
+            onClick={() => showAddItemModal(record.number)}
+            style={{ marginRight: 10 }}
+          >
+            Add Items
+          </Button>
+          <Button
+            onClick={() => handleClearTable(record.number)}
+            type="primary"
+            danger
+          >
+            Clear Table
+          </Button>
+        </span>
       ),
     },
   ];
