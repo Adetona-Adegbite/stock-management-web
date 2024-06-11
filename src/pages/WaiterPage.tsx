@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Spin } from "antd";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Spin,
+  Popconfirm,
+  message,
+} from "antd";
 import "./pages.css";
 import axiosInstance from "../axiosinstance";
 
@@ -37,7 +46,35 @@ export const WaiterPage: React.FC = () => {
     fetchWaiters();
   };
 
-  const columns = [{ title: "Name", dataIndex: "name", key: "name" }];
+  const handleDelete = async (id: number) => {
+    try {
+      await axiosInstance.delete(`delete-waiter/${id}`);
+      message.success("Waiter deleted successfully");
+      fetchWaiters();
+    } catch (error) {
+      message.error("Failed to delete waiter");
+    }
+  };
+
+  const columns = [
+    { title: "Name", dataIndex: "name", key: "name" },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (record: Waiter) => (
+        <Popconfirm
+          title="Are you sure to delete this waiter?"
+          onConfirm={() => handleDelete(record.id)}
+          okText="Yes"
+          cancelText="No"
+        >
+          <Button type="link" danger>
+            Delete
+          </Button>
+        </Popconfirm>
+      ),
+    },
+  ];
 
   return (
     <div className="page-container">

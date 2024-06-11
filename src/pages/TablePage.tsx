@@ -78,6 +78,7 @@ export const TablePage: React.FC = () => {
 
   const handleOk = async () => {
     const values = form.getFieldsValue();
+
     await axiosInstance.post("create-waiter-tab", values);
     setIsModalVisible(false);
     fetchTables();
@@ -85,6 +86,8 @@ export const TablePage: React.FC = () => {
 
   const handleAddItemOk = async () => {
     const values = addItemForm.getFieldsValue();
+    console.log(selectedTableId, values);
+
     if (selectedTableId !== null) {
       try {
         const response = await axiosInstance.post("add-to-waiter-tab", {
@@ -98,7 +101,7 @@ export const TablePage: React.FC = () => {
         fetchTables();
         fetchItems();
       } catch (e: any) {
-        console.log("Error: ", e.response.data);
+        console.log("Error: ", e);
         message.error(`Error:  ${e.response.data}`);
       }
     }

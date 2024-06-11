@@ -77,7 +77,7 @@ const OrdersPage: React.FC = () => {
     content: () => componentRef.current,
     onAfterPrint: async () => {
       if (selectedTable !== null) {
-        await axiosInstance.delete(`clear-table/${selectedTable}`);
+        // await axiosInstance.delete(`clear-table/${selectedTable}`);
         fetchOrders();
         setIsModalVisible(false);
       }
