@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
 
 const handle401Error = () => {
   localStorage.removeItem("token"); // Clear the token from localStorage or any other storage
-  window.location.href = "/login"; // Redirect to login page
+  window.location.href = "https://stock-management-backend.adaptable.app"; // Redirect to login page
 };
 
 axiosInstance.interceptors.request.use(
