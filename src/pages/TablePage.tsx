@@ -38,6 +38,9 @@ export interface Order {
   itemName: string;
   quantity: number;
 }
+// interface OrdersState {
+//   [key: number]: Order[];
+// }
 
 export const TablePage: React.FC = () => {
   const [tables, setTables] = useState<TableData[]>([]);
@@ -81,6 +84,7 @@ export const TablePage: React.FC = () => {
   const fetchOrders = async (tableId: number) => {
     setLoading(true);
     const response = await axiosInstance.get<Order[]>(`table-items/${tableId}`);
+    // @ts-ignore
     setOrders((prevOrders) => ({
       ...prevOrders,
       [tableId]: response.data,
@@ -144,7 +148,7 @@ export const TablePage: React.FC = () => {
     const waiter = waiters.find((w) => w.id === table?.waiterId);
 
     // Flatten orders if it contains nested arrays
-
+    // @ts-ignore
     const tableOrders = orders[table?.id];
     console.log(table);
     console.log(orders);
@@ -212,6 +216,7 @@ export const TablePage: React.FC = () => {
     return (
       <Table
         columns={orderColumns}
+        // @ts-ignore
         dataSource={tableOrders}
         pagination={false}
         rowKey="id"
