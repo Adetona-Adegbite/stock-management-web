@@ -107,9 +107,9 @@ const OrdersPage: React.FC = () => {
   return (
     <div className="page-container">
       <h1>Orders</h1>
-      <Button style={{ margin: 10 }} type="primary" onClick={showPrintModal}>
+      {/* <Button style={{ margin: 10 }} type="primary" onClick={showPrintModal}>
         Print Table Receipt
-      </Button>
+      </Button> */}
       <Spin spinning={loading}>
         <Table columns={columns} dataSource={orders} rowKey="id" />
       </Spin>

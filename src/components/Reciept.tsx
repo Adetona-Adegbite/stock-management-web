@@ -1,36 +1,58 @@
 import React from "react";
-import { Table, Spin } from "antd";
+import { Table } from "antd";
+import { TableData, Waiter, Item, Order } from "../pages/TablePage"; // Adjust the import path if needed
 
 interface ReceiptProps {
-  receiptLoading: boolean;
-  receiptData: any[];
-  receiptColumns: any[];
-  calculateTotal: () => number;
-  ref?: React.RefObject<HTMLDivElement>;
+  table: TableData;
+  orders: Order[];
+  items: Item[];
+  waiter: Waiter;
 }
 
-const Receipt: React.FC<ReceiptProps> = ({
-  receiptLoading,
-  receiptData,
-  receiptColumns,
-  calculateTotal,
-  ref,
-}) => {
+const Receipt: React.FC<ReceiptProps> = ({ table, orders, items, waiter }) => {
+  console.log(table, orders, items, waiter);
+
+  const total = orders.reduce((sum, order) => {
+    const item = items.find((i) => i.id === order.id);
+    console.log("total", item);
+
+    return sum + (item ? item.price * order.quantity : 0);
+  }, 0);
+
+  const columns = [
+    { title: "Item", dataIndex: "itemname", key: "itemName" },
+    { title: "Quantity", dataIndex: "quantity", key: "quantity" },
+    {
+      title: "Unit Price",
+      key: "price",
+      render: (_: any, order: Order) => {
+        const item = items.find((i) => i.id === order.id);
+        return item ? item.price : 0;
+      },
+    },
+    {
+      title: "Total",
+      key: "total",
+      render: (_: any, order: Order) => {
+        const item = items.find((i) => i.id === order.id);
+        return item ? item.price * order.quantity : 0;
+      },
+    },
+  ];
+
   return (
-    <div ref={ref}>
-      <Spin spinning={receiptLoading}>
-        <Table
-          columns={receiptColumns}
-          dataSource={receiptData}
-          rowKey="id"
-          pagination={false}
-        />
-        <div style={{ marginTop: "16px", textAlign: "right" }}>
-          <strong>Total: ₦{calculateTotal()}</strong>
-          <br />
-          <span>Printed on: {new Date().toLocaleString()}</span>
-        </div>
-      </Spin>
+    <div>
+      <h1>Receipt</h1>
+      <p>Table Number: {table.number}</p>
+      <p>Waiter: {table.name}</p>
+      <p>Date: {new Date().toLocaleString()}</p>
+      <Table
+        dataSource={orders}
+        columns={columns}
+        pagination={false}
+        rowKey="id"
+      />
+      <p>Total: {total}</p>
     </div>
   );
 };

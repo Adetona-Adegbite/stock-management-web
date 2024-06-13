@@ -10,8 +10,9 @@ import {
   Spin,
 } from "antd";
 import axiosInstance from "../axiosinstance";
+import Receipt from "../components/Reciept";
 
-interface TableData {
+export interface TableData {
   id: number;
   number: number;
   waiterId: number;
@@ -19,14 +20,22 @@ interface TableData {
   cleared: boolean;
 }
 
-interface Waiter {
+export interface Waiter {
   id: number;
   name: string;
 }
 
-interface Item {
+export interface Item {
   id: number;
   name: string;
+  quantity: number;
+  price?: number;
+}
+
+export interface Order {
+  id: number;
+  tableId: number;
+  itemName: string;
   quantity: number;
 }
 
@@ -34,6 +43,7 @@ export const TablePage: React.FC = () => {
   const [tables, setTables] = useState<TableData[]>([]);
   const [waiters, setWaiters] = useState<Waiter[]>([]);
   const [items, setItems] = useState<Item[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddItemModalVisible, setIsAddItemModalVisible] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
@@ -68,6 +78,18 @@ export const TablePage: React.FC = () => {
     setLoading(false);
   };
 
+  const fetchOrders = async (tableId: number) => {
+    setLoading(true);
+    const response = await axiosInstance.get<Order[]>(`table-items/${tableId}`);
+    setOrders((prevOrders) => ({
+      ...prevOrders,
+      [tableId]: response.data,
+    }));
+    console.log(response.data);
+
+    setLoading(false);
+  };
+
   const showModal = () => {
     setIsModalVisible(true);
     form.resetFields();
@@ -84,14 +106,13 @@ export const TablePage: React.FC = () => {
     const values = addItemForm.getFieldsValue();
     if (selectedTableId !== null) {
       try {
-        await axiosInstance.post("add-to-waiter-tab", {
+        await axiosInstance.post("add-to-table", {
           tableId: selectedTableId,
           itemId: values.itemId,
           quantity: values.quantity,
         });
         setIsAddItemModalVisible(false);
-        fetchTables();
-        fetchItems();
+        fetchOrders(selectedTableId);
       } catch (e: any) {
         message.error(`Error:  ${e.response.data}`);
       }
@@ -110,10 +131,92 @@ export const TablePage: React.FC = () => {
       fetchTables();
       message.success("Table cleared successfully");
     } catch (e: any) {
-      console.log(e);
-
       message.error(`Error: ${e.response.data}`);
     }
+  };
+
+  const handlePrintReceipt = (tableId: number) => {
+    // console.log(orders, waiters, tables);
+    console.log(tableId);
+    console.log(tables);
+
+    const table = tables.find((t) => t.id === tableId);
+    const waiter = waiters.find((w) => w.id === table?.waiterId);
+
+    // Flatten orders if it contains nested arrays
+
+    const tableOrders = orders[table?.id];
+    console.log(table);
+    console.log(orders);
+
+    console.log(tableOrders);
+
+    console.log(waiters);
+
+    // console.log(table);
+    // console.log(orders);
+
+    // console.log(tableOrders);
+
+    Modal.confirm({
+      title: `Print Receipt for Table ${table?.number}`,
+      content: (
+        <Receipt
+          table={table!}
+          orders={tableOrders}
+          items={items}
+          waiter={waiter!} // Ensure waiter is not undefined
+        />
+      ),
+      okText: "Print",
+      cancelText: "Cancel",
+      onOk() {
+        window.print();
+      },
+    });
+  };
+
+  const handleDeleteItem = async (orderId: number) => {
+    try {
+      await axiosInstance.delete(`delete-order/${orderId}`);
+      if (selectedTableId !== null) fetchOrders(selectedTableId);
+      message.success("Item deleted successfully");
+    } catch (e: any) {
+      console.log(e);
+
+      message.error(`Error: ${e.response.data.error}`);
+    }
+  };
+
+  const expandedRowRender = (table: TableData) => {
+    const tableOrders = orders[table.id] || [];
+    // console.log(tableOrders);
+
+    const orderColumns = [
+      { title: "Item", dataIndex: "itemname", key: "itemName" },
+      { title: "Quantity", dataIndex: "quantity", key: "quantity" },
+      {
+        title: "Actions",
+        key: "actions",
+        render: (_text: string, record: Order) => (
+          <Button
+            onClick={() => handleDeleteItem(record.id)}
+            type="primary"
+            danger
+          >
+            Delete
+          </Button>
+        ),
+      },
+    ];
+    return (
+      <Table
+        columns={orderColumns}
+        dataSource={tableOrders}
+        pagination={false}
+        rowKey="id"
+      />
+    );
   };
 
   const columns = [
@@ -131,17 +234,21 @@ export const TablePage: React.FC = () => {
       render: (_text: string, record: TableData) => (
         <span>
           <Button
-            onClick={() => showAddItemModal(record.number)}
+            onClick={() => showAddItemModal(record.id)} // Pass tableId instead of tableNumber
             style={{ marginRight: 10 }}
           >
             Add Items
           </Button>
           <Button
-            onClick={() => handleClearTable(record.number)}
+            onClick={() => handleClearTable(record.id)}
             type="primary"
             danger
+            style={{ marginRight: 10 }}
           >
             Clear Table
+          </Button>
+          <Button onClick={() => handlePrintReceipt(record.id)}>
+            Print Receipt
           </Button>
         </span>
       ),
@@ -160,6 +267,12 @@ export const TablePage: React.FC = () => {
           columns={columns}
           dataSource={tables}
           rowKey="id"
+          expandable={{
+            expandedRowRender,
+            onExpand: (expanded, record) => {
+              if (expanded) fetchOrders(record.id);
+            },
+          }}
         />
       </Spin>
       <Modal
