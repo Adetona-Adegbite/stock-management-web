@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Button, Modal, Form, Select, Spin } from "antd";
+import { Table, Modal, Form, Select, Spin } from "antd";
 import axiosInstance from "../axiosinstance.ts";
 import { useReactToPrint } from "react-to-print";
 import "./pages.css";
@@ -47,11 +47,11 @@ const OrdersPage: React.FC = () => {
     setLoading(false);
   };
 
-  const showPrintModal = () => {
-    setIsModalVisible(true);
-    setSelectedTable(null);
-    setReceiptData({ items: [], total: 0, printedDate: "" });
-  };
+  // const showPrintModal = () => {
+  //   setIsModalVisible(true);
+  //   setSelectedTable(null);
+  //   setReceiptData({ items: [], total: 0, printedDate: "" });
+  // };
 
   const handleTableSelect = async (tableId: number) => {
     setReceiptLoading(true);

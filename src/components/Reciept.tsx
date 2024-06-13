@@ -15,7 +15,7 @@ const Receipt: React.FC<ReceiptProps> = ({ table, orders, items, waiter }) => {
   const total = orders.reduce((sum, order) => {
     const item = items.find((i) => i.id === order.id);
     console.log("total", item);
-
+    // @ts-ignore
     return sum + (item ? item.price * order.quantity : 0);
   }, 0);
 
@@ -35,6 +35,7 @@ const Receipt: React.FC<ReceiptProps> = ({ table, orders, items, waiter }) => {
       key: "total",
       render: (_: any, order: Order) => {
         const item = items.find((i) => i.id === order.id);
+        // @ts-ignore
         return item ? item.price * order.quantity : 0;
       },
     },
