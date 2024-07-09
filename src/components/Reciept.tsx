@@ -10,10 +10,15 @@ interface ReceiptProps {
 }
 
 const Receipt: React.FC<ReceiptProps> = ({ table, orders, items, waiter }) => {
-  console.log(table, orders, items, waiter);
+  console.log("Orders: ", orders, "Items: ", items);
+  console.log("Waiter:", waiter);
 
   const total = orders.reduce((sum, order) => {
-    const item = items.find((i) => i.id === order.id);
+    const item = items.find((i) => {
+      // @ts-ignore
+
+      return i.name === order.itemname;
+    });
     console.log("total", item);
     // @ts-ignore
     return sum + (item ? item.price * order.quantity : 0);
@@ -26,7 +31,9 @@ const Receipt: React.FC<ReceiptProps> = ({ table, orders, items, waiter }) => {
       title: "Unit Price",
       key: "price",
       render: (_: any, order: Order) => {
-        const item = items.find((i) => i.id === order.id);
+        // @ts-ignore
+
+        const item = items.find((i) => i.name === order.itemname);
         return item ? item.price : 0;
       },
     },
@@ -34,7 +41,9 @@ const Receipt: React.FC<ReceiptProps> = ({ table, orders, items, waiter }) => {
       title: "Total",
       key: "total",
       render: (_: any, order: Order) => {
-        const item = items.find((i) => i.id === order.id);
+        // @ts-ignore
+
+        const item = items.find((i) => i.name === order.itemname);
         // @ts-ignore
         return item ? item.price * order.quantity : 0;
       },
@@ -45,7 +54,7 @@ const Receipt: React.FC<ReceiptProps> = ({ table, orders, items, waiter }) => {
     <div>
       <h1>Receipt</h1>
       <p>Table Number: {table.number}</p>
-      <p>Waiter: {table.name}</p>
+      <p>Waiter: {waiter.name}</p>
       <p>Date: {new Date().toLocaleString()}</p>
       <Table
         dataSource={orders}

@@ -64,6 +64,8 @@ export const TablePage: React.FC = () => {
     setLoading(true);
     const response = await axiosInstance.get<TableData[]>("tables");
     setTables(response.data);
+    console.log(response.data);
+
     setLoading(false);
   };
 
@@ -83,7 +85,7 @@ export const TablePage: React.FC = () => {
 
   const fetchOrders = async (tableId: number) => {
     setLoading(true);
-    const response = await axiosInstance.get<Order[]>(`table-items/${tableId}`);
+    const response = await axiosInstance.get(`table-items/${tableId}`);
     // @ts-ignore
     setOrders((prevOrders) => ({
       ...prevOrders,
@@ -110,13 +112,14 @@ export const TablePage: React.FC = () => {
     const values = addItemForm.getFieldsValue();
     if (selectedTableId !== null) {
       try {
-        await axiosInstance.post("add-to-table", {
+        await axiosInstance.post("add-to-waiter-tab", {
           tableId: selectedTableId,
           itemId: values.itemId,
           quantity: values.quantity,
         });
         setIsAddItemModalVisible(false);
         fetchOrders(selectedTableId);
+        console.log(selectedTableId);
       } catch (e: any) {
         message.error(`Error:  ${e.response.data}`);
       }
@@ -145,7 +148,11 @@ export const TablePage: React.FC = () => {
     console.log(tables);
 
     const table = tables.find((t) => t.id === tableId);
-    const waiter = waiters.find((w) => w.id === table?.waiterId);
+    const waiter = waiters.find((w) => {
+      // @ts-ignore
+
+      return w.id === table?.waiterid;
+    });
 
     // Flatten orders if it contains nested arrays
     // @ts-ignore
@@ -194,7 +201,10 @@ export const TablePage: React.FC = () => {
 
   const expandedRowRender = (table: TableData) => {
     const tableOrders = orders[table.id] || [];
-    // console.log(tableOrders);
+    console.log(tableOrders);
+
+    // console.log(orders);
+    // console.log(table.id);
 
     const orderColumns = [
       { title: "Item", dataIndex: "itemname", key: "itemName" },
@@ -275,6 +285,8 @@ export const TablePage: React.FC = () => {
           expandable={{
             expandedRowRender,
             onExpand: (expanded, record) => {
+              console.log("record", record);
+
               if (expanded) fetchOrders(record.id);
             },
           }}
