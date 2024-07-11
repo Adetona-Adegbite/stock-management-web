@@ -11,6 +11,7 @@ import {
 } from "antd";
 import axiosInstance from "../axiosinstance";
 import Receipt from "../components/Reciept";
+import { useNavigate } from "react-router-dom";
 
 export interface TableData {
   id: number;
@@ -53,6 +54,7 @@ export const TablePage: React.FC = () => {
   const [form] = Form.useForm();
   const [addItemForm] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTables();
@@ -64,7 +66,7 @@ export const TablePage: React.FC = () => {
     setLoading(true);
     const response = await axiosInstance.get<TableData[]>("tables");
     setTables(response.data);
-    console.log(response.data);
+    // console.log("Table Data: ", response.data);
 
     setLoading(false);
   };
@@ -73,6 +75,8 @@ export const TablePage: React.FC = () => {
     setLoading(true);
     const response = await axiosInstance.get<Waiter[]>("waiters");
     setWaiters(response.data);
+    // console.log("Waiters Data: ", response.data);
+
     setLoading(false);
   };
 
@@ -190,7 +194,10 @@ export const TablePage: React.FC = () => {
   const handleDeleteItem = async (orderId: number) => {
     try {
       await axiosInstance.delete(`delete-order/${orderId}`);
+      // console.log(selectedTableId);
+
       if (selectedTableId !== null) fetchOrders(selectedTableId);
+      navigate("/tables");
       message.success("Item deleted successfully");
     } catch (e: any) {
       console.log(e);
